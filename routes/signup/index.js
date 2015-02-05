@@ -5,13 +5,11 @@ exports.init = function(req, res){
     res.redirect(req.user.defaultReturnUrl());
   }
   else {
-    res.render('signup/index', {
-      oauthMessage: ''
-    });
+    res.render('signup/index', { title: 'signup' });
   }
 };
 
-exports.signup = function(req, res){
+/*exports.signup = function(req, res){
   var workflow = req.app.utility.workflow(req, res);
 
   workflow.on('validate', function() {
@@ -174,4 +172,4 @@ exports.signup = function(req, res){
   });
 
   workflow.emit('validate');
-};
+};*/

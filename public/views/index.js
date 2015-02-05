@@ -5,13 +5,16 @@
   var app = app || {};
 
   app.Signup = Backbone.Model.extend({
-    url: '/signup/index/',
+    url: function() {
+        return 'http://localhost:3000/signup/'
+    },
     defaults: {
-      errors: [],
-      errfor: {},
-      username: '',
-      email: '',
-      password: ''
+        success: false,
+        errors: [],
+        errfor: {},
+        username: '',
+        email: '',
+        password: ''
     }
   });
 

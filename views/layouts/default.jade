@@ -1,0 +1,22 @@
+doctype html
+html
+  head
+    include meta
+    include fb_meta
+    block head
+    include css
+    include js
+    block neck
+    
+  body
+    include navbar
+   
+    div.wrapper
+      include sidebar
+      #page-content-wrapper
+        block body
+    block feet
+    
+    include footer
+    
+    

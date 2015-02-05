@@ -37,6 +37,19 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//response locals
+app.use(function(req, res, next) {
+    res.locals.currentURL = function(path) {
+        if (path !== '') path = '/' + path;
+        return (req._parsedUrl.path + path).replace('//', '/');
+    };
+    res.locals.now = function() {
+        return new Date().now;
+    };
+    res.locals.user = req.user;
+    next();
+});
+
 //route requests
 require('./routes')(app, passport);
 
