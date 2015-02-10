@@ -8,6 +8,7 @@ var http = require('http');
 var passport = require('passport');
 var session = require('express-session');
 var mongoose = require('mongoose');
+var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 
 var app = express();
 
@@ -22,8 +23,20 @@ app.db.once('open', function callback () {
   console.log('MongoDB connected.');
 });
 
-//config data models schema
-require('./models')(app, mongoose);
+
+var adminuserSchema = new mongoose.Schema({
+    username: {type: String, unique: true, select: false },
+    password: {type: String, unique: false, select: false },
+    timeCreated: {type: Date, default: Date.now, select: false },
+    lastlogin: { type: Date }
+});
+
+app.db = {
+	model: {
+        AdminUser: mongoose.model('adminuser', adminuserSchema)
+    }
+};
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -36,6 +49,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// passport facebook login use
+app.use(session({ secret: 'funtube', resave: true, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+//Sessions (optional)
+passport.serializeUser(function(user, done) { 
+  done(null, user);  
+});
+
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
+});
+
+
 
 //response locals
 app.use(function(req, res, next) {
@@ -51,7 +80,14 @@ app.use(function(req, res, next) {
 });
 
 //route requests
-require('./routes')(app, passport);
+var routes = require('./routes/index');
+var users = require('./routes/users');
+app.use('/', routes);
+app.use('/users', users);
+
+var administrator = require('./routes/administrator');
+app.use(administrator);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

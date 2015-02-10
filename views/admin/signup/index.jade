@@ -1,0 +1,22 @@
+extends ../layout/default
+
+block head
+  title= title
+
+block neck
+
+block feet
+
+block body
+  .container
+    .row
+      .col-xs-12.col-md-6.col-md-offset-3.column
+        h1= title 
+        h1.lead 請輸入您的管理帳號與密碼
+        br
+        form(role='form', action='/administrator/signup', method='post')
+          .form-group
+            input.form-control(type='text', name="username", placeholder='輸入管理帳號')
+          .form-group
+            input.form-control(type='password', name="password",  placeholder='輸入管理密碼')
+          button.btn.btn-primary.pull-right(type='submit') 註冊 

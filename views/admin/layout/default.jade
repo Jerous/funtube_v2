@@ -1,0 +1,20 @@
+doctype html
+html
+  head
+    include meta
+    block head
+    include css
+    include js
+    block neck
+    
+  body
+    include navbar
+   
+    div.wrapper
+      #page-content-wrapper
+        block body
+    block feet
+    
+    include footer
+    
+    
