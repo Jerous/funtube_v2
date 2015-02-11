@@ -20,13 +20,11 @@ router.get('/administrator/login', function(req, res) {
     res.render('admin/login/index', { title: 'admin login' });
 });
 
-router.post('/administrator/login',passport.authenticate('local', 
-    { 
-        successRedirect: '/administrator', 
-        failureRedirect: '/administrator/login', 
-        failureFlash: true 
-    }
-));
+router.post('/administrator/login', 
+passport.authenticate('local', { failureRedirect: '/administrator/login' }),
+    function(req, res) {
+        res.redirect('/administrator');
+    });
 
 router.get('/administrator/logout', function(req, res){
     req.logout();
@@ -64,9 +62,11 @@ router.post('/administrator/signup', function(req, res) {
     });
     
     workflow.on('createadmin',function(){
+        var crypto = require('crypto');
+        var passwordsha1 = crypto.createHash('sha1').update(password).digest("hex");
         var adminuser = new model({
             username : username,
-            password : password,
+            password : passwordsha1,
             timeCreated : Date.now(),
             lastlogin : '',
 

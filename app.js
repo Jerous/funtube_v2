@@ -8,6 +8,7 @@ var http = require('http');
 var passport = require('passport');
 var session = require('express-session');
 var mongoose = require('mongoose');
+var crypto = require('crypto');
 var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 
 var app = express();
@@ -31,9 +32,9 @@ var adminuserSchema = new mongoose.Schema({
     lastlogin: { type: Date }
 });
 
-adminuserSchema.methods.validPassword = function( pwd ) {
-    // EXAMPLE CODE!
-    return ( this.password === pwd );
+adminuserSchema.methods.verifyPassword = function( pwd ) {
+    var passwordsha1 = crypto.createHash('sha1').update(pwd).digest("hex");
+    return ( this.password === passwordsha1 );
 };
 
 app.db = {
@@ -71,14 +72,10 @@ passport.deserializeUser(function(obj, done) {
 
 passport.use(new LocalStrategy(
     function(username, password, done) {
-        app.db.model.AdminUser.findOne({ username: username }, function(err, user) {
+        app.db.model.AdminUser.findOne({ username: username }, function (err, user) {
             if (err) { return done(err); }
-            if (!user) {
-                return done(null, false, { message: 'Incorrect username.' });
-            }
-            if (!user.validPassword(password)) {
-                return done(null, false, { message: 'Incorrect password.' });
-            }
+            if (!user) { return done(null, false); }
+            if (!user.verifyPassword(password)) { return done(null, false); }
             return done(null, user);
         });
     }
