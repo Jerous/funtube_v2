@@ -25,11 +25,16 @@ app.db.once('open', function callback () {
 
 
 var adminuserSchema = new mongoose.Schema({
-    username: {type: String, unique: true, select: false },
-    password: {type: String, unique: false, select: false },
-    timeCreated: {type: Date, default: Date.now, select: false },
+    username: {type: String, unique: true, select: true },
+    password: {type: String, unique: false, select: true },
+    timeCreated: {type: Date, default: Date.now, select: true },
     lastlogin: { type: Date }
 });
+
+adminuserSchema.methods.validPassword = function( pwd ) {
+    // EXAMPLE CODE!
+    return ( this.password === pwd );
+};
 
 app.db = {
 	model: {
@@ -64,7 +69,20 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        app.db.model.AdminUser.findOne({ username: username }, function(err, user) {
+            if (err) { return done(err); }
+            if (!user) {
+                return done(null, false, { message: 'Incorrect username.' });
+            }
+            if (!user.validPassword(password)) {
+                return done(null, false, { message: 'Incorrect password.' });
+            }
+            return done(null, user);
+        });
+    }
+));
 
 //response locals
 app.use(function(req, res, next) {

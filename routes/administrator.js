@@ -11,21 +11,10 @@ router.get('/administrator', function(req, res, next) {
 		res.redirect('/administrator/login');
 	}
 });
-    
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    req.app.db.model.AdminUser.findOne({ username: username }, function(err, user) {
-      if (err) { return done(err); }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    });
-  }
-));
+
+router.get('/administrator', function(req, res) {
+    res.render('admin/index', { title: 'funtube admin area' });
+});
 
 router.get('/administrator/login', function(req, res) {
     res.render('admin/login/index', { title: 'admin login' });
@@ -39,6 +28,10 @@ router.post('/administrator/login',passport.authenticate('local',
     }
 ));
 
+router.get('/administrator/logout', function(req, res){
+    req.logout();
+    res.redirect('/administrator/login');
+});
 
 router.get('/administrator/signup', function(req, res) {
     res.render('admin/signup/index', { title: 'admin signup' });
@@ -94,6 +87,16 @@ router.post('/administrator/signup', function(req, res) {
 });
 
 
+router.get('/api/adminuser', function(req, res) {
+    var model = req.app.db.model.AdminUser;
+
+	var vcard = model.find({}, function(err, vcard) {
+		res.send({
+			AdminUser: vcard
+		});
+		res.end();
+	});
+});
 
 function isAuth(req, res, next){
 	if (req.isAuthenticated()) {  
