@@ -8,7 +8,6 @@ var http = require('http');
 var passport = require('passport');
 var session = require('express-session');
 var mongoose = require('mongoose');
-var crypto = require('crypto');
 var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 
 var app = express();
@@ -24,25 +23,8 @@ app.db.once('open', function callback () {
   console.log('MongoDB connected.');
 });
 
-
-var adminuserSchema = new mongoose.Schema({
-    username: {type: String, unique: true, select: true },
-    password: {type: String, unique: false, select: true },
-    timeCreated: {type: Date, default: Date.now, select: true },
-    lastlogin: { type: Date }
-});
-
-adminuserSchema.methods.verifyPassword = function( pwd ) {
-    var passwordsha1 = crypto.createHash('sha1').update(pwd).digest("hex");
-    return ( this.password === passwordsha1 );
-};
-
-app.db = {
-	model: {
-        AdminUser: mongoose.model('adminuser', adminuserSchema)
-    }
-};
-
+//models
+var adminuser = require('./schema/adminuser.js');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -72,10 +54,16 @@ passport.deserializeUser(function(obj, done) {
 
 passport.use(new LocalStrategy(
     function(username, password, done) {
-        app.db.model.AdminUser.findOne({ username: username }, function (err, user) {
-            if (err) { return done(err); }
-            if (!user) { return done(null, false); }
-            if (!user.verifyPassword(password)) { return done(null, false); }
+        adminuser.findOne({ username: username }, function (err, user) {
+            if (err) {
+                return done(err);
+            }
+            if (!user) {
+                return done(null, false, { message: 'Unknown user' });
+            }
+            if (!user.verifyPassword(password)) { 
+                return done(null, false, { message: 'Invalid password' });
+            }
             return done(null, user);
         });
     }
