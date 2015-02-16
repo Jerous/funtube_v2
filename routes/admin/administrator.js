@@ -5,7 +5,7 @@ var crypto = require('crypto');
 var passport = require('passport'), 
     LocalStrategy = require('passport-local').Strategy;
     
-var adminuser = require('../schema/adminuser.js');
+var adminuser = require('../../schema/adminuser.js');
 
 function isAuth(req, res, next){
 	if (req.isAuthenticated()) {  
@@ -33,7 +33,7 @@ passport.authenticate('local', { failureRedirect: '/administrator/login' }),
             },
             function(err){
                 if(!err){
-                    res.redirect('/administrator');
+                    res.redirect('/administrator/' + req.user._id);
                 }
             }
         );  
@@ -56,18 +56,18 @@ router.post('/administrator/signup', function(req, res, next) {
     
     workflow.outcome = {
         success: false,
-        errfor: {}
+        message: {}
     };
     
     workflow.on('validation',function(){    //設立一個狀態 validation
         
         if (username.length === 0)
-            workflow.outcome.errfor.title = '這是一個必填欄位';
+            workflow.outcome.message.title = '這是一個必填欄位';
         
         if (password.length === 0)
-            workflow.outcome.errfor.content = '這是一個必填欄位';
+            workflow.outcome.message.content = '這是一個必填欄位';
 
-        if (Object.keys(workflow.outcome.errfor).length !== 0)
+        if (Object.keys(workflow.outcome.message).length !== 0)
             return workflow.emit('response');
    
         workflow.emit('UsernameCheck');  //跳到另一個狀態
@@ -77,7 +77,7 @@ router.post('/administrator/signup', function(req, res, next) {
         adminuser.findOne({ username: req.body.username }, function(err, user) {
 
           if (user) {
-            workflow.outcome.errfor.username = '使用者名稱已經存在';
+            workflow.outcome.message.username = '使用者名稱已經存在';
             return workflow.emit('response');
           }
 
@@ -109,7 +109,7 @@ router.post('/administrator/signup', function(req, res, next) {
     
     workflow.on('response',function(){
         if (workflow.outcome.success === true){
-            res.redirect('/administrator');
+            res.redirect('/administrator/' + workflow.user._id);
         }
     });
     

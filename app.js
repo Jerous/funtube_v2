@@ -88,8 +88,11 @@ var users = require('./routes/users');
 app.use('/', routes);
 app.use('/users', users);
 
-var administrator = require('./routes/administrator');
+var administrator = require('./routes/admin/administrator');
 app.use(administrator);
+
+var adminaccount = require('./routes/admin/adminaccount');
+app.use(adminaccount);
 
 
 // catch 404 and forward to error handler
