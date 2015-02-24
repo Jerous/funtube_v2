@@ -3,18 +3,17 @@ html
   head
     include meta
     block head
-    include css
-    include js
+    include css 
     block neck
     
-  body
+  body.skin-blue
     include navbar
    
     div.wrapper
-      #page-content-wrapper
+      div.content-wrapper
         block body
+      include footer
+    
+    include js
+    
     block feet
-    
-    include footer
-    
-    

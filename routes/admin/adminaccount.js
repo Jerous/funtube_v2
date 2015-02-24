@@ -26,6 +26,17 @@ router.get('/administrator/:user_id', isAuth, function(req, res) {
 	});
 });
 
+router.get('/administrator/:user_id/changepassword', isAuth, function(req, res) {
+    var user_id = req.params.user_id;
+    adminuser.findOne({_id: user_id}, function(err, user) {
+        if(err){
+            res.send({error: 'no user find'});
+        }
+		res.render('admin/account/changepassword', { title: 'Admin Change Password' });
+		res.end();
+	});
+});
+
 router.post('/administrator/:user_id/changepassword', isAuth, function(req, res) {
     var workflow = new events.EventEmitter();  //建立狀態機物件
     var user_id = req.params.user_id;

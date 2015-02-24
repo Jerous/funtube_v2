@@ -16,7 +16,7 @@ function isAuth(req, res, next){
 }
 
 router.get('/administrator', isAuth, function(req, res) {
-    res.render('admin/index', { title: 'funtube Admin Area' });
+    res.render('admin/index', { title: 'Admin Area' });
 });
 
 router.get('/administrator/login', function(req, res) {
@@ -33,7 +33,7 @@ passport.authenticate('local', { failureRedirect: '/administrator/login' }),
             },
             function(err){
                 if(!err){
-                    res.redirect('/administrator/' + req.user._id);
+                    res.redirect('/administrator/');
                 }
             }
         );  

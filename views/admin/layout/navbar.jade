@@ -1,21 +1,121 @@
-nav.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
-    .container-fluid
-        .navbar-header
-          button.navbar-toggle(type='button', data-toggle='collapse', data-target='#navbar-collapse')
-            span.sr-only Toggle navigation
-            span.icon-bar
-            span.icon-bar
-            span.icon-bar
-          a.navbar-brand(href='#') funtube
-        #navbar-collapse.collapse.navbar-collapse
-          ul.nav.navbar-nav
-            li
-                if user
-                    a(href='/administrator/#{user._id}') Hello~ #{user.username}
-            li
-                if user
-                    a(href='/administrator/logout')
-                        span.fa.fa-facebook-square &nbsp;Logout
-                else
-                    a(href='/administrator/login')
-                        span.fa.fa-facebook-square &nbsp;Login
+header.main-header
+  a.logo(href='index2.html')
+      b funtube 
+      | Admin
+  nav.navbar.navbar-static-top(role='navigation')
+    a.sidebar-toggle(href='#', data-toggle='offcanvas', role='button')
+      span.sr-only Toggle navigation
+
+    .navbar-custom-menu
+      ul.nav.navbar-nav
+        li.dropdown.user.user-menu
+          a.dropdown-toggle(href='#', data-toggle='dropdown')
+            img.user-image(src='http://ssl.gstatic.com/accounts/ui/avatar_2x.png', alt='User Image')               
+            span.hidden-xs #{user.username}
+          ul.dropdown-menu
+            li.user-header
+              img.img-circle(src='http://ssl.gstatic.com/accounts/ui/avatar_2x.png', alt='User Image')                
+              p
+                #{user.username} - Administrator
+                small since #{user.timeCreated}
+                small last login #{user.lastlogin}
+            li.user-footer
+              .pull-left
+                a.btn.btn-default.btn-flat(href='/administrator/#{user._id}/changepassword') 修改密碼
+              .pull-right
+                a.btn.btn-default.btn-flat(href='/administrator/logout') 登出
+
+aside.main-sidebar
+  section.sidebar
+    .user-panel
+      .pull-left.image
+        img.img-circle(src='http://ssl.gstatic.com/accounts/ui/avatar_2x.png', alt='User Image')       
+      .pull-left.info
+        p #{user.username}
+        a(href='#')
+          i.fa.fa-circle.text-success
+          | Online
+    form.sidebar-form(action='#', method='get')
+      .input-group
+        input.form-control(type='text', name='q', placeholder='Search...')            
+        span.input-group-btn
+          button#search-btn.btn.btn-flat(type='submit', name='search')
+            i.fa.fa-search
+    ul.sidebar-menu
+      li.header MAIN NAVIGATION         
+      li.active.treeview
+        a(href='#')
+          i.fa.fa-dashboard
+          span Dashboard
+          i.fa.fa-angle-left.pull-right         
+        ul.treeview-menu
+          li.active
+            a(href='index.html')
+              i.fa.fa-circle-o
+              | Dashboard v1        
+          li
+            a(href='index2.html')
+              i.fa.fa-circle-o
+              | Dashboard v2          
+      li.treeview
+        a(href='#')
+          i.fa.fa-files-o            
+          span Layout Options         
+          span.label.label-primary.pull-right 4       
+        ul.treeview-menu
+          li
+            a(href='pages/layout/top-nav.html')
+              i.fa.fa-circle-o
+              | Top Navigation
+                           
+          li
+            a(href='pages/layout/boxed.html')
+              i.fa.fa-circle-o
+              | Boxed       
+          li
+            a(href='pages/layout/fixed.html')
+              i.fa.fa-circle-o
+              | Fixed              
+          li
+            a(href='pages/layout/collapsed-sidebar.html')
+              i.fa.fa-circle-o
+              | Collapsed Sidebar        
+      li
+        a(href='pages/widgets.html')
+          i.fa.fa-th
+          span Widgets
+          small.label.pull-right.bg-green new          
+      li.treeview
+        a(href='#')
+          i.fa.fa-pie-chart            
+          span Charts            
+          i.fa.fa-angle-left.pull-right   
+        ul.treeview-menu
+          li
+            a(href='pages/charts/morris.html')
+              i.fa.fa-circle-o
+              | Morris     
+          li
+            a(href='pages/charts/flot.html')
+              i.fa.fa-circle-o
+              | Flot        
+          li
+            a(href='pages/charts/inline.html')
+              i.fa.fa-circle-o
+              | Inline charts 
+
+      li.header LABELS           
+      li
+        a(href='#') 
+          i.fa.fa-circle-o.text-danger 
+          | Important
+          
+      li
+        a(href='#')
+          i.fa.fa-circle-o.text-warning
+          | Warning
+      li
+        a(href='#')
+          i.fa.fa-circle-o.text-info
+          | Information
+
