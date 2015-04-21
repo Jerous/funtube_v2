@@ -24,20 +24,20 @@ router.get('/administrator/login', function(req, res) {
 });
 
 router.post('/administrator/login', 
-passport.authenticate('local', { failureRedirect: '/administrator/login' }),
-    function(req, res) {
-        adminuser.update(
-            {username: req.user.username}, 
-            {$set: 
-                {lastlogin: Date.now()}
-            },
-            function(err){
-                if(!err){
-                    res.redirect('/administrator/');
+    passport.authenticate('local'),
+        function(req, res) {      
+            adminuser.update(
+                {username: req.user.username}, 
+                {$set: 
+                    {lastlogin: Date.now()}
+                },
+                function(err){
+                    if(!err){
+                        res.redirect('/administrator/');
+                    }
                 }
-            }
-        );  
-    });
+            ); 
+});
 
 router.get('/administrator/logout', function(req, res){
     req.logout();
@@ -48,26 +48,24 @@ router.get('/administrator/signup', function(req, res) {
     res.render('admin/signup/index', { title: 'Admin Signup' });
 });
 
-router.post('/administrator/signup', function(req, res, next) {
-    var workflow = new events.EventEmitter();  //建立狀態機物件
-    
-    var username = req.body.username;
-    var password = req.body.password;
+router.post('/administrator/signup', function(req, res) {
+    var workflow = new events.EventEmitter();
     
     workflow.outcome = {
         success: false,
-        message: {}
+        errors: [],
+        errfor: {}
     };
     
     workflow.on('validation',function(){    //設立一個狀態 validation
         
-        if (username.length === 0)
-            workflow.outcome.message.title = '這是一個必填欄位';
+        if (!req.body.username)
+            workflow.outcome.errfor.username = '這是一個必填欄位';
         
-        if (password.length === 0)
-            workflow.outcome.message.content = '這是一個必填欄位';
+        if (!req.body.password)
+            workflow.outcome.errfor.password = '這是一個必填欄位';
 
-        if (Object.keys(workflow.outcome.message).length !== 0)
+        if (Object.keys(workflow.outcome.errfor).length !== 0)
             return workflow.emit('response');
    
         workflow.emit('UsernameCheck');  //跳到另一個狀態
@@ -77,8 +75,7 @@ router.post('/administrator/signup', function(req, res, next) {
         adminuser.findOne({ username: req.body.username }, function(err, user) {
 
           if (user) {
-            workflow.outcome.message.username = '使用者名稱已經存在';
-            return workflow.emit('response');
+            workflow.outcome.errfor.usernamecheck = '使用者名稱已經存在';
           }
 
           workflow.emit('createadmin');
@@ -86,9 +83,9 @@ router.post('/administrator/signup', function(req, res, next) {
     });
     
     workflow.on('createadmin',function(){
-        var passwordsha1 = crypto.createHash('sha1').update(password).digest("hex");
+        var passwordsha1 = crypto.createHash('sha1').update(req.body.password).digest("hex");
         var newadminuser = new adminuser({
-            username : username,
+            username : req.body.username,
             password : passwordsha1,
             timeCreated : Date.now(),
             lastlogin : ''
@@ -108,9 +105,7 @@ router.post('/administrator/signup', function(req, res, next) {
     });
     
     workflow.on('response',function(){
-        if (workflow.outcome.success === true){
-            res.redirect('/administrator/' + workflow.user._id);
-        }
+        res.send(workflow.outcome);
     });
     
     return workflow.emit('validation');

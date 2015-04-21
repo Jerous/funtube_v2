@@ -1,6 +1,6 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
+//var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -59,10 +59,10 @@ passport.use(new LocalStrategy(
                 return done(err);
             }
             if (!user) {
-                return done(null, false, { message: 'Unknown user' });
+                return done(null, false, { message: '無效的使用者' });
             }
             if (!user.verifyPassword(password)) { 
-                return done(null, false, { message: 'Invalid password' });
+                return done(null, false, { message: '無效的密碼' });
             }
             return done(null, user);
         });
@@ -132,7 +132,7 @@ app.locals.copyrightYear = new Date().getFullYear();
 app.locals.copyrightName = config.companyName;
 app.locals.cacheBreaker = 'br34k-01';
 
-http.createServer(app).listen(3000, function(){
+http.createServer(app).listen(3002, function(){
     console.log('Express server lisening on port 3000');
 });
 

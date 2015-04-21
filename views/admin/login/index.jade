@@ -3,7 +3,8 @@ html
   head
     title= title
     include ../layout/meta
-    include ../layout/css 
+    include ../layout/css
+    
  
   body
   .login-page
@@ -14,13 +15,27 @@ html
         = title
       .login-box-body
         p.login-box-msg 請輸入帳號密碼登入
-        form(role='form', action='/administrator/login', method='post')
-          .form-group.has-feedback
-            input.form-control(type='text', name="username", placeholder='帳號')        
-            span.glyphicon.glyphicon-user.form-control-feedback     
-          .form-group.has-feedback
-            input.form-control(type='password', name="password", placeholder='密碼')        
-            span.glyphicon.glyphicon-lock.form-control-feedback     
+        div#form-section
+
+  include ../layout/js
+  script(src='/views/admin/account/login.js')      
+
+  script(type='text/template', id='tmpl-login')
+      form
+          .alerts
+            <% _.each(errors, function(err) { %>
+            .alert.alert-danger.alert-dismissable
+              button.close(type='button', data-dismiss='alert') &times;
+              <%= errfor.passwordcheck %>
+            <% }); %>
+          .form-group(class!='<%= errfor.username ? "has-error" : "" %>')
+            input.form-control#username(type='text', name="username", placeholder='帳號')        
+            span.glyphicon.glyphicon-user.form-control-feedback  
+            span.help-block <%- errfor.username %> <%= errfor.username %>
+          .form-group(class!='<%= errfor.password ? "has-error" : "" %>')
+            input.form-control#password(type='password', name="password", placeholder='密碼')        
+            span.glyphicon.glyphicon-lock.form-control-feedback
+            span.help-block <%= errfor.password %>
           .row
             .col-xs-12
-              button.btn.btn-primary.btn-block.btn-flat(type='submit') 登入
+              button.btn.btn-primary.btn-login(type='button') 登入
