@@ -16,7 +16,7 @@ exports = module.exports = function(app, passport) {
   /*app.use('/users', require('./routes/users'));*/
 
   //sign up
-  app.get('/signup/', require('./routes/signup/index').init);
+  //app.get('/signup/', require('./routes/signup/index').init);
   /*app.post('/signup/', require('./routes/signup/index').signup)
 
   //route not found

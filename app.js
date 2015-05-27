@@ -133,7 +133,7 @@ app.locals.copyrightName = config.companyName;
 app.locals.cacheBreaker = 'br34k-01';
 
 http.createServer(app).listen(3002, function(){
-    console.log('Express server lisening on port 3000');
+    console.log('Express server lisening on port 3002');
 });
 
 module.exports = app;
